@@ -32,6 +32,8 @@ export default {
       },
       backgroundImage: {
         "radial-blue": "radial-gradient(circle, #24A0B5/20%, #24A0B5)",
+        "radial-combo":
+          "radial-gradient(circle, rgba(36,160,181,0.2), #24a0b5), #02191d",
       },
     },
   },

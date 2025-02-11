@@ -11,7 +11,7 @@ function NavBar() {
 
   console.log(path);
   return (
-    <nav className="border border-blue-primary rounded-3xl px-4 py-2 w-full bg-background-primary">
+    <nav className="border border-blue-primary rounded-3xl px-4 py-2 w-full bg-[rgba(5,37,44,0.4)] mt-2">
       <div className="flex items-center justify-between w-full text-white">
         {/* logo */}
         <div className="">

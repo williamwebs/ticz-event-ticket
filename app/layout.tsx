@@ -14,10 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>
+      <body className="bg-[#02191D] text-white">
         <NavBar />
 
-        <main>{children}</main>
+        <main className="container mx-auto pt-10">{children}</main>
       </body>
     </html>
   );
