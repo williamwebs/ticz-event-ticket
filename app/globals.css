@@ -19,3 +19,18 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@font-face {
+  font-family: "Roboto";
+  src: url("/Fonts/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Road Rage";
+  src: url("/Fonts/RoadRage-Regular.ttf");
+}
+
+@font-face {
+  font-family: "JejuMyeongjo";
+  src: url("/Fonts/JejuMyeongjo-Regular.ttf");
+}
