@@ -18,6 +18,7 @@ export default {
           DEFAULT: "#041E23",
           primary: "#08252B",
           secondary: "#02191D",
+          tertiary: "#052228",
         },
         stroke: {
           DEFAULT: "#0E464F",

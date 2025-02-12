@@ -24,3 +24,19 @@
 .linear-gradient {
   background: linear-gradient(#02191d, #24a0b5, #02191d, #02191d);
 }
+
+.error {
+  @apply text-xs text-red-600 font-roboto font-normal mt-2 block
+}
+
+.label {
+  @apply block mb-2 text-base text-grey font-normal font-roboto
+}
+
+.input {
+  @apply block w-full bg-transparent rounded-xl border border-stroke h-10 px-3 outline-none focus:outline-stroke
+}
+
+.textarea {
+  @apply block w-full bg-transparent rounded-xl border border-stroke h-32 px-3 outline-none focus:outline-stroke resize-none
+}
