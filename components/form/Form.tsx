@@ -11,6 +11,7 @@ import { StepProps } from "@/app/page";
 import { RiDownloadCloud2Line } from "react-icons/ri";
 import { useDropzone } from "react-dropzone";
 import html2canvas from "html2canvas";
+import QRCode from "react-qr-code";
 import Image from "next/image";
 
 type Inputs = z.infer<typeof FormDataShema>;
@@ -22,6 +23,7 @@ interface FormProps {
 }
 
 const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
+  const [qrValue, setQrValue] = useState("");
   const [selectedTicket, setSelectedTicket] = useState<string>("");
   const [previousStep, setPreviousStep] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -36,6 +38,8 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     handleSubmit,
     trigger,
     setValue,
+    watch,
+    reset,
     formState: { errors, isSubmitting, isSubmitted },
   } = useForm<Inputs>({
     resolver: zodResolver(FormDataShema),
@@ -49,14 +53,34 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     },
   });
 
+  type FieldName = keyof Inputs;
+
   const onSubmit = (data: Inputs) => {
+    const encodedData = JSON.stringify(data);
+    setQrValue(encodedData);
+    // check if theres a ticket in local storage. if yes, pysh the new ticket, if not, create a ticket in the localstorage
+    // save the user ticket in the db. should be an array containing user details including qrcode.
+
+    const storedTickets = localStorage.getItem("tickets");
+    let tickets: any[] = storedTickets ? JSON.parse(storedTickets) : [];
+
+    // create new ticket from the user data na d qrcode
+    const newTicket = {
+      ...data,
+      qrCode: qrValue,
+      createdAt: new Date().toISOString(),
+    };
+
+    // push the new ticket to local storage
+    tickets.push(newTicket);
+
+    // update ls
+    localStorage.setItem("tickets", JSON.stringify(tickets));
     console.log("submitted!", data);
   };
 
-  type FieldName = keyof Inputs;
-
   // handle next
-  const next = async () => {
+  const next = async (data: Inputs) => {
     const fields = steps[currentStep].fields;
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
 
@@ -64,7 +88,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
 
     if (currentStep < steps.length - 1) {
       if (currentStep === steps.length - 2) {
-        // submit when user clicks on the button in the second form
+        onSubmit(data);
       }
       setPreviousStep(currentStep);
       setCurrentStep((step) => step + 1);
@@ -119,6 +143,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
       try {
         const canvas = await html2canvas(ticketRef.current, {
           useCORS: true,
+          scale: window.devicePixelRatio,
         });
 
         const dataUrl = canvas.toDataURL("image/png");
@@ -132,6 +157,11 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
         console.error("Error generating image:", error);
       }
     }
+  };
+
+  const handleReset = () => {
+    reset();
+    setCurrentStep(0);
   };
 
   return (
@@ -368,7 +398,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                 Back
               </button>
               <button
-                onClick={next}
+                onClick={handleSubmit(next)}
                 className="text-sm font-normal font-jejumyeongjo text-grey h-full px-16 py-4 sm:py-0 border border-blue bg-blue rounded w-full sm:w-2/3"
               >
                 Get My Free Ticket
@@ -388,20 +418,22 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
               </p>
             </div>
             {/* svg */}
-            <div ref={ticketRef} className="relative w-full h-44 mt-8">
-              <Image src={"/ticket-bg.svg"} fill alt="ticket bg" />
+            <div ref={ticketRef} className="relative w-[528px] h-[176px] mt-8">
+              <Image
+                src={"/ticket-bg.svg"}
+                width={528}
+                height={176}
+                alt="ticket bg"
+              />
 
-              <div className="absolute w-full h-full pt-3 px-3">
-                <section className="relative w-full h-full">
-                  <div className="flex items-start gap-3">
+              <div className="absolute top-1 left-0 w-[528px] h-[176px] px-3 flex gap-5 overflow-hidden">
+                <section className="relative w-full h-full p-3 rounded-l-2xl">
+                  <div className="flex items-start gap-4">
                     {/* qr code */}
-                    <div className="w-[130px] h-[123px] my-0.5 -ml-0.5 rounded-lg overflow-hidden flex items-center justify-center">
-                      <Image
-                        src={"qr-code-ticz.svg"}
-                        width={128}
-                        height={122}
-                        alt="qr code"
-                      />
+                    <div className="w-[140px] h-[123px] p-1 my-0.5 rounded-lg overflow-hidden flex items-center justify-center">
+                      {qrValue && (
+                        <QRCode value={qrValue} className="w-full h-full" />
+                      )}
                     </div>
                     {/* ticket information */}
                     <div className="flex-1">
@@ -412,7 +444,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                             Techember Fest ”25
                           </h3>
                         </div>
-                        <div className="-mt-2">
+                        <div className="-mt-2 -mr-5">
                           <Image
                             src={"reg.svg"}
                             width={60}
@@ -432,26 +464,31 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                       </div>
                     </div>
                   </div>
-                  <div className="font-semibold font-roboto text-sm text-stroke">
-                    Ticket for 1 entry only
+                  <div className="font-semibold font-roboto text-xs text-stroke mt-2">
+                    Ticket for {watch("unit")} entry only
                   </div>
-                  {/* user information */}
-                  <div className="-rotate-[90deg] flex items-center gap-2 absolute -right-[56px] bottom-[60px] max-h-[60px]">
-                    <div className="">
+                </section>
+                {/* user information */}
+                <section className="w-[74px] h-full py-1 px-2 rounded-r-2xl overflow-hidden">
+                  <div className="flex flex-col-reverse items-center gap-1">
+                    <div>
                       <Image
                         src={"reg.svg"}
-                        width={40}
-                        height={40}
+                        width={35}
+                        height={35}
                         alt="ticket badge"
                       />
                     </div>
-                    <div>
-                      <h3 className="text-xl text-grey font-normal font-roadrage max-w-48 pr-1 -mt-1 mb-1">
-                        Techember Fest ”25
-                      </h3>
-                      <p className="text-grey text-xs font-normal font-roboto">
-                        User Name: <span className="font-light">John Doe</span>
-                      </p>
+                    <div className="flex-1 p-1">
+                      <div className="[writing-mode:vertical-rl] [transform:rotate(180deg)]">
+                        <h3 className="text-xl text-grey font-normal font-roadrage max-w-48">
+                          Techember Fest ”25
+                        </h3>
+                        <p className="text-grey text-[11px] font-normal font-roboto">
+                          User Name:{" "}
+                          <span className="font-light">{watch("name")}</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -459,7 +496,10 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             </div>
             {/* button */}
             <div className="sm:border border-stroke bg-background sm:h-10 rounded-3xl mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:gap-0 justify-evenly">
-              <button className="text-base sm:text-sm font-normal font-jejumyeongjo inline-block text-blue h-full px-16 py-4 sm:py-0 border border-blue rounded">
+              <button
+                onClick={handleReset}
+                className="text-base sm:text-sm font-normal font-jejumyeongjo inline-block text-blue h-full px-16 py-4 sm:py-0 border border-blue rounded"
+              >
                 Book Another Ticket
               </button>
               <button

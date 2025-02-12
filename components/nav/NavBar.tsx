@@ -9,7 +9,6 @@ import { IoIosArrowRoundForward } from "react-icons/io";
 function NavBar() {
   const path = usePathname();
 
-  console.log(path);
   return (
     <nav className="sticky top-0 border border-blue-primary rounded-3xl px-4 py-2 w-full bg-[rgba(5,37,44,0.4)] mt-2 backdrop-blur z-10">
       <div className="flex items-center justify-between w-full text-white">
