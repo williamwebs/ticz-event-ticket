@@ -42,7 +42,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     watch,
     reset,
     getValues,
-    formState: { errors, isSubmitting, isSubmitted },
+    formState: { errors },
   } = useForm<Inputs>({
     resolver: zodResolver(FormDataShema),
     defaultValues: {
@@ -66,7 +66,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     // save the user ticket in the db. should be an array containing user details including qrcode.
 
     const storedTickets = localStorage.getItem("tickets");
-    let tickets: any[] = storedTickets ? JSON.parse(storedTickets) : [];
+    const tickets: Inputs[] = storedTickets ? JSON.parse(storedTickets) : [];
 
     // create new ticket from the user data na d qrcode
     const newTicket = {
