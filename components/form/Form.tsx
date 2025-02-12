@@ -2,7 +2,7 @@
 
 import { ticketTypes } from "@/constants/data";
 import { DevTool } from "@hookform/devtools";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormDataShema } from "@/lib/schema";
@@ -10,6 +10,7 @@ import { z } from "zod";
 import { StepProps } from "@/app/page";
 import { RiDownloadCloud2Line } from "react-icons/ri";
 import { useDropzone } from "react-dropzone";
+import html2canvas from "html2canvas";
 import Image from "next/image";
 
 type Inputs = z.infer<typeof FormDataShema>;
@@ -110,10 +111,33 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     }
   };
 
+  // ticket download fns
+  const ticketRef = useRef<HTMLDivElement>(null);
+
+  const handleTicketDownload = async () => {
+    if (ticketRef.current) {
+      try {
+        const canvas = await html2canvas(ticketRef.current, {
+          useCORS: true,
+        });
+
+        const dataUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "ticket.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error("Error generating image:", error);
+      }
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        {currentStep === 2 && (
+        {currentStep === 0 && (
           <div className="mt-8 sm:border border-stroke rounded-2xl sm:p-6">
             {/* form header */}
             <div className="border border-[#07373F] p-3 sm:p-5 rounded-2xl text-center linear-gradient">
@@ -353,13 +377,85 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
           </div>
         )}
 
-        {currentStep === 0 && (
-          <div className="mt-8 text-center">
-            <h3>Your Ticket is Booked!</h3>
-            <p>You can download or Check your email for a copy</p>
+        {currentStep === 2 && (
+          <div className="mt-8">
+            <div className="text-center">
+              <h3 className="font-medium font-roboto text-3xl text-white">
+                Your Ticket is Booked!
+              </h3>
+              <p className="font-normal font-roboto text-base text-grey mt-2">
+                You can download or Check your email for a copy
+              </p>
+            </div>
             {/* svg */}
-            <div className="relative w-full h-44 mt-8">
+            <div ref={ticketRef} className="relative w-full h-44 mt-8">
               <Image src={"/ticket-bg.svg"} fill alt="ticket bg" />
+
+              <div className="absolute w-full h-full pt-3 px-3">
+                <section className="relative w-full h-full">
+                  <div className="flex items-start gap-3">
+                    {/* qr code */}
+                    <div className="w-[130px] h-[123px] my-0.5 -ml-0.5 rounded-lg overflow-hidden flex items-center justify-center">
+                      <Image
+                        src={"qr-code-ticz.svg"}
+                        width={128}
+                        height={122}
+                        alt="qr code"
+                      />
+                    </div>
+                    {/* ticket information */}
+                    <div className="flex-1">
+                      {/* top */}
+                      <div className="flex items-start gap-2">
+                        <div>
+                          <h3 className="text-5xl text-grey font-normal font-roadrage max-w-48 pr-1 -mt-1 mb-1">
+                            Techember Fest ”25
+                          </h3>
+                        </div>
+                        <div className="-mt-2">
+                          <Image
+                            src={"reg.svg"}
+                            width={60}
+                            height={60}
+                            alt="ticket badge"
+                          />
+                        </div>
+                      </div>
+                      {/* bottom */}
+                      <div>
+                        <p className="font-normal font-roboto text-base text-grey">
+                          📍 04 Rumens road, Ikoyi, Lagos
+                        </p>
+                        <p className="font-normal font-roboto text-base text-grey">
+                          📅 March 15, 2025 | 7:00 PM
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="font-semibold font-roboto text-sm text-stroke">
+                    Ticket for 1 entry only
+                  </div>
+                  {/* user information */}
+                  <div className="-rotate-[90deg] flex items-center gap-2 absolute -right-[56px] bottom-[60px] max-h-[60px]">
+                    <div className="">
+                      <Image
+                        src={"reg.svg"}
+                        width={40}
+                        height={40}
+                        alt="ticket badge"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-xl text-grey font-normal font-roadrage max-w-48 pr-1 -mt-1 mb-1">
+                        Techember Fest ”25
+                      </h3>
+                      <p className="text-grey text-xs font-normal font-roboto">
+                        User Name: <span className="font-light">John Doe</span>
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              </div>
             </div>
             {/* button */}
             <div className="sm:border border-stroke bg-background sm:h-10 rounded-3xl mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:gap-0 justify-evenly">
@@ -367,7 +463,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                 Book Another Ticket
               </button>
               <button
-                onClick={next}
+                onClick={handleTicketDownload}
                 className="text-base sm:text-sm font-normal font-jejumyeongjo text-grey h-full px-16 py-4 sm:py-0 border border-blue bg-blue rounded"
               >
                 Download Ticket
