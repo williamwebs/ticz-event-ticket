@@ -40,7 +40,7 @@ function NavBar() {
         {/* cta */}
         <Link
           href={"/"}
-          className="flex items-center gap-1 bg-white rounded font-jejumyeongjo text-sm text-[#0a0c11] uppercase py-3 px-5"
+          className="flex items-center gap-1 bg-white hover:bg-blue hover:text-grey transition duration-300 border border-transparent hover:border-grey rounded font-jejumyeongjo text-sm text-[#0a0c11] uppercase py-3 px-5"
         >
           My Tickets
           <IoIosArrowRoundForward className="size-5" />

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { StepProps } from "@/app/page";
 import { RiDownloadCloud2Line } from "react-icons/ri";
 import { useDropzone } from "react-dropzone";
+import { motion } from "framer-motion";
 import html2canvas from "html2canvas";
 import QRCode from "react-qr-code";
 import Image from "next/image";
@@ -40,6 +41,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     setValue,
     watch,
     reset,
+    getValues,
     formState: { errors, isSubmitting, isSubmitted },
   } = useForm<Inputs>({
     resolver: zodResolver(FormDataShema),
@@ -54,6 +56,8 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
   });
 
   type FieldName = keyof Inputs;
+
+  const ticketType = watch("type");
 
   const onSubmit = (data: Inputs) => {
     const encodedData = JSON.stringify(data);
@@ -80,8 +84,20 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
   };
 
   // handle next
-  const next = async (data: Inputs) => {
+  const next = async (
+    dataOrEvent?: Inputs | React.MouseEvent<HTMLButtonElement>
+  ) => {
+    let data: Inputs;
+
+    if (dataOrEvent && "preventDefault" in dataOrEvent) {
+      data = getValues();
+    } else if (dataOrEvent) {
+      data = dataOrEvent as Inputs;
+    } else {
+      data = getValues();
+    }
     const fields = steps[currentStep].fields;
+    console.log(fields);
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
 
     if (!output) return;
@@ -161,6 +177,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
 
   const handleReset = () => {
     reset();
+    setSelectedTicket("");
     setCurrentStep(0);
   };
 
@@ -168,13 +185,18 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
     <>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         {currentStep === 0 && (
-          <div className="mt-8 sm:border border-stroke rounded-2xl sm:p-6">
+          <motion.div
+            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="mt-8 sm:border border-stroke rounded-2xl sm:p-6"
+          >
             {/* form header */}
             <div className="border border-[#07373F] p-3 sm:p-5 rounded-2xl text-center linear-gradient">
-              <h2 className="text-grey text-6xl sm:text-6xl font-medium font-roadrage">
+              <h2 className="text-grey text-5xl sm:text-6xl font-medium font-roadrage">
                 Techember Fest ”25
               </h2>
-              <p className="text-lg sm:text-base text-grey font-roboto my-4 sm:my-3 max-w-xs mx-auto px-3 sm:px-0">
+              <p className="text-lg sm:text-base text-grey font-roboto my-4 sm:my-3 max-w-xs mx-auto px-2 sm:px-0">
                 Join us for an unforgettable experience at [Event Name]! Secure
                 your spot now.
               </p>
@@ -268,17 +290,23 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={next}
                 className="text-base sm:text-sm font-normal font-jejumyeongjo text-grey h-full px-16 py-4 sm:py-0 border border-blue bg-blue rounded"
               >
                 Next
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {currentStep === 1 && (
-          <div className="mt-8 sm:border border-stroke rounded-2xl sm:p-6 text-left bg-background-tertiary">
+          <motion.div
+            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="mt-8 sm:border border-stroke rounded-2xl sm:p-6 text-left sm:bg-background-tertiary"
+          >
             {/* form header */}
             <div className="border border-[#07373F] p-3 sm:p-5 rounded-2xl bg-background">
               <h3 className="text-base text-grey font-normal font-roboto">
@@ -404,33 +432,49 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                 Get My Free Ticket
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {currentStep === 2 && (
-          <div className="mt-8">
-            <div className="text-center">
+          <motion.div
+            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="mt-8"
+          >
+            <div className="text-left sm:text-center">
               <h3 className="font-medium font-roboto text-3xl text-white">
                 Your Ticket is Booked!
               </h3>
               <p className="font-normal font-roboto text-base text-grey mt-2">
-                You can download or Check your email for a copy
+                You can download or Check your <br className="sm:hidden" />
+                email for a copy
               </p>
             </div>
             {/* svg */}
-            <div ref={ticketRef} className="relative w-[528px] h-[176px] mt-8">
+            <div
+              ref={ticketRef}
+              className="relative w-full h-[110px] sm:w-[528px] sm:h-[176px] mt-8"
+            >
               <Image
                 src={"/ticket-bg.svg"}
                 width={528}
                 height={176}
                 alt="ticket bg"
+                className="hidden sm:block"
+              />
+              <Image
+                src={"/ticket-bg.svg"}
+                fill
+                alt="ticket bg"
+                className="sm:hidden"
               />
 
-              <div className="absolute top-1 left-0 w-[528px] h-[176px] px-3 flex gap-5 overflow-hidden">
-                <section className="relative w-full h-full p-3 rounded-l-2xl">
-                  <div className="flex items-start gap-4">
+              <div className="absolute top-1 left-0 w-[528px] h-[176px] px-3 flex gap-2 sm:gap-5 overflow-hidden">
+                <section className="relative w-full h-full p-1 sm:p-3 rounded-l-2xl">
+                  <div className="flex items-start gap-2 sm:gap-4">
                     {/* qr code */}
-                    <div className="w-[140px] h-[123px] p-1 my-0.5 rounded-lg overflow-hidden flex items-center justify-center">
+                    <div className="w-20 h-20 sm:w-[140px] sm:h-[123px] p-0.5 sm:p-1 sm:my-0.5 rounded-lg overflow-hidden flex items-center justify-center">
                       {qrValue && (
                         <QRCode value={qrValue} className="w-full h-full" />
                       )}
@@ -438,53 +482,94 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                     {/* ticket information */}
                     <div className="flex-1">
                       {/* top */}
-                      <div className="flex items-start gap-2">
+                      <div className="flex items-start gap-2 sm:gap-2">
                         <div>
-                          <h3 className="text-5xl text-grey font-normal font-roadrage max-w-48 pr-1 -mt-1 mb-1">
+                          <h3 className="text-2xl sm:text-5xl text-grey font-normal font-roadrage max-w-48 pr-1 -mt-1 mb-1">
                             Techember Fest ”25
                           </h3>
                         </div>
-                        <div className="-mt-2 -mr-5">
+                        <div className="sm:-mt-2 sm:-mr-5">
+                          {/* ticketType */}
                           <Image
-                            src={"reg.svg"}
+                            src={`${
+                              ticketType === "regular"
+                                ? "reg.svg"
+                                : ticketType === "vvip"
+                                ? "vvip.svg"
+                                : "vip.svg"
+                            }`}
                             width={60}
                             height={60}
                             alt="ticket badge"
+                            className="hidden sm:block"
+                          />
+                          <Image
+                            src={`${
+                              ticketType === "regular"
+                                ? "reg.svg"
+                                : ticketType === "vvip"
+                                ? "vvip.svg"
+                                : "vip.svg"
+                            }`}
+                            width={25}
+                            height={25}
+                            alt="ticket badge"
+                            className="sm:hidden"
                           />
                         </div>
                       </div>
                       {/* bottom */}
-                      <div>
-                        <p className="font-normal font-roboto text-base text-grey">
+                      <div className="mt-2 sm:mt-0">
+                        <p className="font-normal font-roboto text-[10px] sm:text-base text-grey">
                           📍 04 Rumens road, Ikoyi, Lagos
                         </p>
-                        <p className="font-normal font-roboto text-base text-grey">
+                        <p className="font-normal font-roboto text-[10px] sm:text-base text-grey">
                           📅 March 15, 2025 | 7:00 PM
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className="font-semibold font-roboto text-xs text-stroke mt-2">
+                  <div className="font-bold sm:font-semibold font-roboto text-[8px] sm:text-xs text-stroke mt-2">
                     Ticket for {watch("unit")} entry only
                   </div>
                 </section>
                 {/* user information */}
-                <section className="w-[74px] h-full py-1 px-2 rounded-r-2xl overflow-hidden">
+                <section className="w-[47px] sm:w-[74px] h-full py-0.5 sm:py-1 px-0.5 sm:px-2 rounded-r-2xl overflow-hidden">
                   <div className="flex flex-col-reverse items-center gap-1">
                     <div>
                       <Image
-                        src={"reg.svg"}
+                        src={`${
+                          ticketType === "regular"
+                            ? "reg.svg"
+                            : ticketType === "vvip"
+                            ? "vvip.svg"
+                            : "vip.svg"
+                        }`}
                         width={35}
                         height={35}
                         alt="ticket badge"
+                        className="hidden sm:block"
+                      />
+                      <Image
+                        src={`${
+                          ticketType === "regular"
+                            ? "reg.svg"
+                            : ticketType === "vvip"
+                            ? "vvip.svg"
+                            : "vip.svg"
+                        }`}
+                        width={20}
+                        height={20}
+                        alt="ticket badge"
+                        className="sm:hidden"
                       />
                     </div>
                     <div className="flex-1 p-1">
                       <div className="[writing-mode:vertical-rl] [transform:rotate(180deg)]">
-                        <h3 className="text-xl text-grey font-normal font-roadrage max-w-48">
+                        <h3 className="text-base sm:text-xl text-grey font-normal font-roadrage max-w-48">
                           Techember Fest ”25
                         </h3>
-                        <p className="text-grey text-[11px] font-normal font-roboto">
+                        <p className="text-grey text-[8px] sm:text-[11px] font-normal font-roboto">
                           User Name:{" "}
                           <span className="font-light">{watch("name")}</span>
                         </p>
@@ -509,7 +594,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                 Download Ticket
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
       </form>
       <DevTool control={control} />
