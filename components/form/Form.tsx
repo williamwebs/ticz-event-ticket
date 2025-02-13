@@ -12,8 +12,8 @@ import { RiDownloadCloud2Line } from "react-icons/ri";
 import { useDropzone } from "react-dropzone";
 import { motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import QRCode from "react-qr-code";
 import Image from "next/image";
+import BarCode from "../barcode/BarCode";
 
 type Inputs = z.infer<typeof FormDataShema>;
 
@@ -449,7 +449,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
 
               <div>
                 <label htmlFor="email" className="label">
-                  About the project
+                  Special request
                 </label>
 
                 <textarea
@@ -511,137 +511,114 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             {/* svg */}
             <div
               ref={ticketRef}
-              className="relative w-full h-[110px] sm:w-[528px] sm:h-[176px] mt-8"
+              className="relative border border-stroke bg-background mx-auto w-[300px] h-[600px] p-4 mt-8"
               role="img"
               aria-label="Your ticket, showing event details and QR code"
             >
-              <Image
-                src={"/ticket-bg.svg"}
-                width={528}
-                height={176}
-                alt="ticket bg"
-                className="hidden sm:block"
-              />
-              <Image
-                src={"/ticket-bg.svg"}
-                fill
-                alt="ticket bg"
-                className="sm:hidden"
-              />
+              {/* edges starts here */}
+              <div className="absolute rounded-full -top-2 -left-2 border-r border-stroke rotate-45 bg-background-secondary w-5 h-5"></div>
+              <div className="absolute rounded-full -top-2 -right-2 border-b border-stroke rotate-45 bg-background-secondary w-5 h-5"></div>
+              <div className="absolute rounded-full -bottom-2 -left-2 border-l border-stroke rotate-90 bg-background-secondary w-5 h-5"></div>
+              <div className="absolute rounded-full -bottom-2 -right-2 border-l border-stroke rotate-90 bg-background-secondary w-5 h-5"></div>
+              <div className="absolute rounded-full bottom-24 -left-2 border-r border-stroke bg-background-secondary w-5 h-5"></div>
+              <div className="absolute rounded-full bottom-24 -right-2 border-l border-stroke bg-background-secondary w-5 h-5"></div>
+              {/* edges ends here */}
 
-              <div className="absolute top-1 left-0 w-[528px] h-[176px] px-3 flex gap-2 sm:gap-5 overflow-hidden">
-                <section
-                  aria-label="Ticket details"
-                  className="relative w-full h-full p-1 sm:p-3 rounded-l-2xl"
-                >
-                  <div className="flex items-start gap-2 sm:gap-4">
-                    {/* qr code */}
-                    <div className="w-20 h-20 sm:w-[140px] sm:h-[123px] p-0.5 sm:p-1 sm:my-0.5 rounded-lg overflow-hidden flex items-center justify-center">
-                      {qrValue && (
-                        <QRCode value={qrValue} className="w-full h-full" />
-                      )}
-                    </div>
-                    {/* ticket information */}
-                    <div className="flex-1">
-                      {/* top */}
-                      <div className="flex items-start gap-2 sm:gap-2">
-                        <div>
-                          <h3 className="text-2xl sm:text-5xl text-grey font-normal font-roadrage max-w-48 pr-1 -mt-1 mb-1">
-                            Techember Fest ”25
-                          </h3>
-                        </div>
-                        <div className="sm:-mt-2 sm:-mr-5">
-                          {/* ticketType */}
-                          <Image
-                            src={`${
-                              ticketType === "regular"
-                                ? "reg.svg"
-                                : ticketType === "vvip"
-                                ? "vvip.svg"
-                                : "vip.svg"
-                            }`}
-                            width={60}
-                            height={60}
-                            alt="ticket badge"
-                            className="hidden sm:block"
-                          />
-                          <Image
-                            src={`${
-                              ticketType === "regular"
-                                ? "reg.svg"
-                                : ticketType === "vvip"
-                                ? "vvip.svg"
-                                : "vip.svg"
-                            }`}
-                            width={25}
-                            height={25}
-                            alt="ticket badge"
-                            className="sm:hidden"
-                          />
-                        </div>
-                      </div>
-                      {/* bottom */}
-                      <div className="mt-2 sm:mt-0">
-                        <p className="font-normal font-roboto text-[10px] sm:text-base text-grey">
-                          📍 04 Rumens road, Ikoyi, Lagos
-                        </p>
-                        <p className="font-normal font-roboto text-[10px] sm:text-base text-grey">
-                          📅 March 15, 2025 | 7:00 PM
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="font-bold sm:font-semibold font-roboto text-[8px] sm:text-xs text-stroke mt-2">
-                    Ticket for {watch("unit")} entry only
-                  </div>
-                </section>
-                {/* user information */}
-                <section
-                  aria-label="User information"
-                  className="w-[47px] sm:w-[74px] h-full py-0.5 sm:py-1 px-0.5 sm:px-2 rounded-r-2xl overflow-hidden"
-                >
-                  <div className="flex flex-col-reverse items-center gap-1">
-                    <div>
+              <div className="rounded-2xl border border-stroke w-full h-[446px] py-3 px-3">
+                <h3 className="text-center text-white text-4xl font-roadrage mb-2">
+                  Techember Fest ”25
+                </h3>
+                <p className="text-xs text-center font-normal font-roboto my-1">
+                  📍 04 Rumens road, Ikoyi, Lagos
+                </p>
+                <p className="text-xs text-center font-normal font-roboto my-1">
+                  📅 March 15, 2025 | 7:00 PM
+                </p>
+
+                {/* user image */}
+                <div className="border-2 border-blue w-[140px] h-[140px] mx-auto bg-blue rounded-2xl my-5 p-1 overflow-hidden">
+                  {watch("image") ? (
+                    <div className="w-full h-full relative overflow-hidden">
                       <Image
-                        src={`${
-                          ticketType === "regular"
-                            ? "reg.svg"
-                            : ticketType === "vvip"
-                            ? "vvip.svg"
-                            : "vip.svg"
-                        }`}
-                        width={35}
-                        height={35}
-                        alt="ticket badge"
-                        className="hidden sm:block"
-                      />
-                      <Image
-                        src={`${
-                          ticketType === "regular"
-                            ? "reg.svg"
-                            : ticketType === "vvip"
-                            ? "vvip.svg"
-                            : "vip.svg"
-                        }`}
-                        width={20}
-                        height={20}
-                        alt="ticket badge"
-                        className="sm:hidden"
+                        src={watch("image")}
+                        alt="Profile Picture"
+                        fill
+                        className="object-cover rounded-lg"
                       />
                     </div>
-                    <div className="flex-1 p-1">
-                      <div className="[writing-mode:vertical-rl] [transform:rotate(180deg)]">
-                        <h3 className="text-base sm:text-xl text-grey font-normal font-roadrage max-w-48">
-                          Techember Fest ”25
-                        </h3>
-                        <p className="text-grey text-[8px] sm:text-[11px] font-normal font-roboto">
-                          User Name:{" "}
-                          <span className="font-light">{watch("name")}</span>
-                        </p>
-                      </div>
+                  ) : (
+                    <p></p>
+                  )}
+                </div>
+
+                <div className="border border-[#133D44] w-full bg-[#08343C] rounded-lg p-2 shadow">
+                  {/* user details */}
+                  <div className="border-b border-[#133D44] flex items-start justify-between pb-1">
+                    <div className="w-1/2">
+                      <span className="font-roboto text-[10px] text-gray-600">
+                        Enter your name
+                      </span>
+                      <h4 className="font-normal font-roboto text-xs my-0.5">
+                        {watch("name")}
+                      </h4>
+                    </div>
+                    <div className="h-10 border border-[#133D44] -mb-1"></div>
+                    <div className="w-1/2 pl-2">
+                      <span className="font-roboto text-[10px] text-gray-600">
+                        Enter your email*
+                      </span>
+                      <h4 className="font-normal font-roboto text-xs my-0.5">
+                        {watch("email").slice(0, 17)}
+                      </h4>
                     </div>
                   </div>
-                </section>
+                  {/* ticket info */}
+                  <div className="border-b border-[#133D44] flex items-start justify-between pb-1">
+                    <div className="w-1/2">
+                      <span className="font-roboto text-[10px] text-gray-600">
+                        Ticket Type:
+                      </span>
+                      <h4 className="font-normal font-roboto text-xs my-0.5 uppercase">
+                        {watch("type")}
+                      </h4>
+                    </div>
+                    <div className="h-10 border border-[#133D44] -mb-1"></div>
+                    <div className="w-1/2 pl-2">
+                      <span className="font-roboto text-[10px] text-gray-600">
+                        Ticket for:
+                      </span>
+                      <h4 className="font-normal font-roboto text-xs my-0.5">
+                        {watch("unit")}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* request details */}
+                  <div className="">
+                    <span className="font-roboto text-[10px] text-gray-600">
+                      Special request?
+                    </span>
+                    <p className="font-normal font-roboto text-xs">
+                      {watch("about")
+                        ? watch("about").split(/\s+/).slice(0, 30).join(" ")
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full mt-6 flex items-center gap-1">
+                {Array.from({ length: 18 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="border-2 border-stroke rounded w-3 p-0.5"
+                  ></div>
+                ))}
+              </div>
+
+              {/* barcode */}
+              <div className="max-h-[68px] mt-5">
+                <BarCode value="123456789012" />
               </div>
             </div>
             {/* button */}
