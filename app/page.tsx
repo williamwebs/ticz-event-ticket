@@ -26,18 +26,29 @@ export default function Home() {
   ];
 
   return (
-    <main className="max-w-xl mx-2 sm:mx-auto border border-stroke rounded-3xl p-4 py-6 sm:p-6 ms:p-8 lg:p-10">
-      <div className="flex flex-col gap-2">
+    <main
+      role="main"
+      className="max-w-xl mx-2 sm:mx-auto border border-stroke rounded-3xl p-4 py-6 sm:p-6 ms:p-8 lg:p-10"
+    >
+      <div className="flex flex-col gap-2" aria-live="polite">
         <div className="flex  items-start sm:items-center space-y-2 sm:space-y-0 justify-between">
-          <h3 className="text-white text-2xl font-jejumyeongjo">
+          <h3 id="step-title" className="text-white text-2xl font-jejumyeongjo">
             {steps[currentStep]?.name}
           </h3>
-          <p className="text-sm text-grey font-roboto">
+          <p id="step-count" className="text-sm text-grey font-roboto">
             Step {currentStep + 1}/{steps.length}
           </p>
         </div>
 
-        <div className="w-full h-1 bg-stroke relative">
+        {/* progress bar */}
+        <div
+          className="w-full h-1 bg-stroke relative"
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={steps.length}
+          aria-valuenow={currentStep + 1}
+          aria-valuetext={`Step ${currentStep + 1} of ${steps.length}`}
+        >
           <div
             className={`absolute top-0 left-0 right-0 bg-blue h-full ${
               currentStep === 0

@@ -190,9 +190,14 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="mt-8 sm:border border-stroke rounded-2xl sm:p-6"
+            role="region"
+            aria-labelledby="form-header"
           >
             {/* form header */}
-            <div className="border border-[#07373F] p-3 sm:p-5 rounded-2xl text-center linear-gradient">
+            <div
+              id="form-header"
+              className="border border-[#07373F] p-3 sm:p-5 rounded-2xl text-center linear-gradient"
+            >
               <h2 className="text-grey text-5xl sm:text-6xl font-medium font-roadrage">
                 Techember Fest ”25
               </h2>
@@ -208,16 +213,23 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             </div>
 
             {/* divider */}
-            <div className="w-full h-1 bg-[#07373F] my-7"></div>
+            <div
+              className="w-full h-1 bg-[#07373F] my-7"
+              aria-hidden="true"
+            ></div>
 
             {/* form fields */}
-            <section>
+            <section aria-labelledby="ticket-type-heading">
               <div className="flex flex-col items-start gap-2">
-                <p className="text-base sm:text-sm text-grey font-roboto font-normal">
+                <p
+                  id="ticket-type-heading"
+                  className="text-base sm:text-sm text-grey font-roboto font-normal"
+                >
                   Select Ticket Type:
                 </p>
 
-                <div className="border border-[#07373F] bg-[#052228] rounded-2xl p-4 w-full font-normal font-roboto">
+                <fieldset className="border border-[#07373F] bg-[#052228] rounded-2xl p-4 w-full font-normal font-roboto">
+                  <legend className="sr-only">Ticket Types</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {ticketTypes.map((ticket) => (
                       <label
@@ -250,18 +262,24 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                           id={ticket.htmlFor}
                           className="sr-only"
                           value={ticket.htmlFor}
+                          aria-describedby="ticket-type-error"
                         />
                       </label>
                     ))}
                   </div>
-                  <span className="error">{errors.type?.message}</span>
-                </div>
+                  <span id="ticket-type-error" className="error">
+                    {errors.type?.message}
+                  </span>
+                </fieldset>
               </div>
 
               <div className="flex flex-col items-start gap-2 mt-4">
-                <p className="text-base sm:text-sm text-grey font-roboto font-normal">
+                <label
+                  htmlFor="unit"
+                  className="text-base sm:text-sm text-grey font-roboto font-normal"
+                >
                   Number of Tickets
-                </p>
+                </label>
 
                 <select
                   {...register("unit", {
@@ -285,8 +303,15 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             </section>
 
             {/* button */}
-            <div className="sm:border border-stroke bg-background sm:h-10 rounded-3xl mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:gap-0 justify-evenly">
-              <button className="text-base sm:text-sm font-normal font-jejumyeongjo text-blue h-full px-16 py-4 sm:py-0 border border-blue rounded">
+            <div
+              role="group"
+              aria-label="form navigation"
+              className="sm:border border-stroke bg-background sm:h-10 rounded-3xl mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:gap-0 justify-evenly"
+            >
+              <button
+                type="button"
+                className="text-base sm:text-sm font-normal font-jejumyeongjo text-blue h-full px-16 py-4 sm:py-0 border border-blue rounded"
+              >
                 Cancel
               </button>
               <button
@@ -306,9 +331,14 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="mt-8 sm:border border-stroke rounded-2xl sm:p-6 text-left sm:bg-background-tertiary"
+            role="region"
+            aria-labelledby="form-header-step-2"
           >
             {/* form header */}
-            <div className="border border-[#07373F] p-3 sm:p-5 rounded-2xl bg-background">
+            <div
+              id="form-header-step-2"
+              className="border border-[#07373F] p-3 sm:p-5 rounded-2xl bg-background"
+            >
               <h3 className="text-base text-grey font-normal font-roboto">
                 Upload Profile Phote
               </h3>
@@ -320,6 +350,9 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                   className={`w-60 h-60 mx-auto rounded-3xl relative cursor-pointer flex flex-col items-center justify-center transition-all duration-300 ${
                     isDragActive ? "bg-gray-200" : "bg-stroke"
                   }`}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Upload profile picture: drag and drop or click to select an image"
                 >
                   <input {...getInputProps()} />
                   {/* display uploaded image */}
@@ -373,7 +406,10 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             </div>
 
             {/* divider */}
-            <div className="w-full h-1 bg-[#07373F] my-7"></div>
+            <div
+              className="w-full h-1 bg-[#07373F] my-7"
+              aria-hidden="true"
+            ></div>
 
             {/* form fields */}
             <div className="flex flex-col gap-4">
@@ -386,8 +422,12 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                   {...register("name")}
                   id="name"
                   className="input"
+                  aria-invalid={errors.name ? "true" : "false"}
+                  aria-describedby={errors.name ? "name-error" : undefined}
                 />
-                <span className="error">{errors.name?.message}</span>
+                <span id="name-error" className="error">
+                  {errors.name?.message}
+                </span>
               </div>
 
               <div>
@@ -399,8 +439,12 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                   {...register("email")}
                   id="email"
                   className="input"
+                  aria-invalid={errors.email ? "true" : "false"}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
-                <span className="error">{errors.email?.message}</span>
+                <span id="email-error" className="error">
+                  {errors.email?.message}
+                </span>
               </div>
 
               <div>
@@ -412,20 +456,28 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                   {...register("about")}
                   id="about"
                   className="textarea"
+                  aria-invalid={errors.about ? "true" : "false"}
+                  aria-describedby={errors.about ? "about-error" : undefined}
                 ></textarea>
                 {/* <span className="error">{errors.about?.message}</span> */}
               </div>
             </div>
 
             {/* button */}
-            <div className="sm:h-10 mt-7 flex flex-col gap-3 sm:flex-row sm:gap-2 justify-between">
+            <div
+              role="group"
+              aria-label="Form navigation"
+              className="sm:h-10 mt-7 flex flex-col gap-3 sm:flex-row sm:gap-2 justify-between"
+            >
               <button
+                type="button"
                 onClick={prev}
                 className="text-sm font-normal font-jejumyeongjo text-blue h-full px-16 py-4 sm:py-0 border border-blue rounded w-full sm:w-1/3"
               >
                 Back
               </button>
               <button
+                type="button"
                 onClick={handleSubmit(next)}
                 className="text-sm font-normal font-jejumyeongjo text-grey h-full px-16 py-4 sm:py-0 border border-blue bg-blue rounded w-full sm:w-2/3"
               >
@@ -441,9 +493,14 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="mt-8"
+            role="region"
+            aria-labelledby="ticket-booked-heading"
           >
             <div className="text-left sm:text-center">
-              <h3 className="font-medium font-roboto text-3xl text-white">
+              <h3
+                id="ticket-booked-heading"
+                className="font-medium font-roboto text-3xl text-white"
+              >
                 Your Ticket is Booked!
               </h3>
               <p className="font-normal font-roboto text-base text-grey mt-2">
@@ -455,6 +512,8 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
             <div
               ref={ticketRef}
               className="relative w-full h-[110px] sm:w-[528px] sm:h-[176px] mt-8"
+              role="img"
+              aria-label="Your ticket, showing event details and QR code"
             >
               <Image
                 src={"/ticket-bg.svg"}
@@ -471,7 +530,10 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
               />
 
               <div className="absolute top-1 left-0 w-[528px] h-[176px] px-3 flex gap-2 sm:gap-5 overflow-hidden">
-                <section className="relative w-full h-full p-1 sm:p-3 rounded-l-2xl">
+                <section
+                  aria-label="Ticket details"
+                  className="relative w-full h-full p-1 sm:p-3 rounded-l-2xl"
+                >
                   <div className="flex items-start gap-2 sm:gap-4">
                     {/* qr code */}
                     <div className="w-20 h-20 sm:w-[140px] sm:h-[123px] p-0.5 sm:p-1 sm:my-0.5 rounded-lg overflow-hidden flex items-center justify-center">
@@ -534,7 +596,10 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                   </div>
                 </section>
                 {/* user information */}
-                <section className="w-[47px] sm:w-[74px] h-full py-0.5 sm:py-1 px-0.5 sm:px-2 rounded-r-2xl overflow-hidden">
+                <section
+                  aria-label="User information"
+                  className="w-[47px] sm:w-[74px] h-full py-0.5 sm:py-1 px-0.5 sm:px-2 rounded-r-2xl overflow-hidden"
+                >
                   <div className="flex flex-col-reverse items-center gap-1">
                     <div>
                       <Image
@@ -580,14 +645,20 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
               </div>
             </div>
             {/* button */}
-            <div className="sm:border border-stroke bg-background sm:h-10 rounded-3xl mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:gap-0 justify-evenly">
+            <div
+              role="group"
+              aria-label="Ticket actions"
+              className="sm:border border-stroke bg-background sm:h-10 rounded-3xl mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:gap-0 justify-evenly"
+            >
               <button
+                type="button"
                 onClick={handleReset}
                 className="text-base sm:text-sm font-normal font-jejumyeongjo inline-block text-blue h-full px-16 py-4 sm:py-0 border border-blue rounded"
               >
                 Book Another Ticket
               </button>
               <button
+                type="button"
                 onClick={handleTicketDownload}
                 className="text-base sm:text-sm font-normal font-jejumyeongjo text-grey h-full px-16 py-4 sm:py-0 border border-blue bg-blue rounded"
               >
