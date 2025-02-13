@@ -57,7 +57,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
 
   type FieldName = keyof Inputs;
 
-  const ticketType = watch("type");
+  // const ticketType = watch("type");
 
   const onSubmit = (data: Inputs) => {
     const encodedData = JSON.stringify(data);
