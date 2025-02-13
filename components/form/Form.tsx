@@ -600,7 +600,7 @@ const Form = ({ steps, currentStep, setCurrentStep }: FormProps) => {
                     </span>
                     <p className="font-normal font-roboto text-xs">
                       {watch("about")
-                        ? watch("about").split(/\s+/).slice(0, 30).join(" ")
+                        ? watch("about").slice(0, 22)
                         : ""}
                     </p>
                   </div>
